@@ -15,6 +15,18 @@ class TrimType(Enum):
 
 
 def trim_line(line: str, trim_type: TrimType = None) -> str:
+    """
+    Trim the leading and/or trailing whitespace of a line of text and
+    returns the result.
+
+    Parameters:
+    line (str): The line of text to trim.
+    trim_type (TrimType): The trim option, defaults to None which means no
+        trimming.
+
+    Returns:
+    str: The trimmed line of text.
+    """
     if trim_type is None or trim_type == TrimType.NONE:
         return line
     if trim_type == TrimType.LEADING:
