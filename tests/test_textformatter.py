@@ -4,8 +4,42 @@ import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
     TrimType,
+    replace_tab_with_spaces,
     trim_line,
 )
+
+
+class TestReplaceTabWithSpaces(unittest.TestCase):
+    def test_replace_single_tab(self):
+        line = "\tSome text"
+        new_line = replace_tab_with_spaces(line, 4)
+        self.assertEqual(new_line, "    Some text")
+
+    def test_replace_multiple_tabs(self):
+        line = " \t  Some more text\t\t"
+        new_line = replace_tab_with_spaces(line, 2)
+        self.assertEqual(new_line, "     Some more text    ")
+
+    def test_replace_tabs_with_no_space(self):
+        line = "\tTest\ttext\t"
+        new_line = replace_tab_with_spaces(line, 0)
+        self.assertEqual(new_line, "Testtext")
+
+    def test_empty_str(self):
+        line = ""
+        new_line = replace_tab_with_spaces(line, 4)
+        self.assertEqual(new_line, "")
+
+    def test_negative_number(self):
+        line = "\tAn example"
+        try:
+            new_line = replace_tab_with_spaces(line, -1)
+        except ValueError:
+            pass
+        except Exception:
+            self.fail("Unexpected exception raised")
+        else:
+            self.fail("ValueError not raised")
 
 
 class TestTrimLine(unittest.TestCase):

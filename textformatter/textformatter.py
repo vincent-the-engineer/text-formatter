@@ -14,15 +14,32 @@ class TrimType(Enum):
     ALL = "all"
 
 
+def replace_tab_with_spaces(line: str, num_spaces: int) -> str:
+    """
+    Replace the tab characters in a line of text with spaces instead
+    and return the result.
+
+    Parameters:
+    line (str): The line of text to replace tabs.
+    num_spaces (int): The number of spaces to replace each tab character.
+
+    Returns:
+    str: The line of text with the tab characters replaced.
+    """
+    if num_spaces < 0:
+        raise ValueError("The number of spaces must be a non-zero integer.")
+    return line.replace("\t", " " * num_spaces)
+
+
 def trim_line(line: str, trim_type: TrimType = None) -> str:
     """
     Trim the leading and/or trailing whitespace of a line of text and
-    returns the result.
+    return the result.
 
     Parameters:
     line (str): The line of text to trim.
-    trim_type (TrimType): The trim option, defaults to None which means no
-        trimming.
+    trim_type (TrimType): The trim option. Defaults to None, which means
+        no trimming.
 
     Returns:
     str: The trimmed line of text.
