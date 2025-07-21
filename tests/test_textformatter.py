@@ -1,3 +1,4 @@
+# --- Imports ---
 import unittest
 
 import textformatter
@@ -9,6 +10,8 @@ from textformatter.textformatter import (
     trim_line,
 )
 
+
+# --- Test Classes ---
 
 class TestReplaceSpacesWithTab(unittest.TestCase):
     def test_replace_single_tab(self):

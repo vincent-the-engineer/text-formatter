@@ -1,5 +1,8 @@
+# --- Imports ---
 from enum import Enum
 
+
+# --- Classes ---
 
 class NewlineType(Enum):
     CR = "\r"
@@ -13,6 +16,8 @@ class TrimType(Enum):
     TRAILING = "trailing"
     ALL = "all"
 
+
+# --- Public Functions ---
 
 def replace_spaces_with_tab(line: str, num_spaces: int) -> str:
     """
