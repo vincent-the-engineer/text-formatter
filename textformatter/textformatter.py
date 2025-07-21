@@ -14,6 +14,24 @@ class TrimType(Enum):
     ALL = "all"
 
 
+def replace_spaces_with_tab(line: str, num_spaces: int) -> str:
+    """
+    Replace consecutive space characters in a line of text with tabs
+    instead and return the result.
+
+    Parameters:
+    line (str): The line of text to replace tabs.
+    num_spaces (int): The number of spaces for each tab character.
+
+    Returns:
+    str: The line of text with the spaces replaced.
+    """
+    if num_spaces < 1:
+        raise ValueError("The number of spaces must be a positive"
+                         f" integer: ({num_spaces}).")
+    return line.replace(" " * num_spaces, "\t")
+
+
 def replace_tab_with_spaces(line: str, num_spaces: int) -> str:
     """
     Replace the tab characters in a line of text with spaces instead
@@ -21,13 +39,14 @@ def replace_tab_with_spaces(line: str, num_spaces: int) -> str:
 
     Parameters:
     line (str): The line of text to replace tabs.
-    num_spaces (int): The number of spaces to replace each tab character.
+    num_spaces (int): The number of spaces for each tab character.
 
     Returns:
     str: The line of text with the tab characters replaced.
     """
     if num_spaces < 0:
-        raise ValueError("The number of spaces must be a non-zero integer.")
+        raise ValueError("The number of spaces must be a non-zero"
+                         f" integer: ({num_spaces}).")
     return line.replace("\t", " " * num_spaces)
 
 
