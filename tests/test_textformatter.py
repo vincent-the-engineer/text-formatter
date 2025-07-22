@@ -4,14 +4,119 @@ import unittest
 import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
+    NewlineType,
     TrimType,
+    split_text_to_lines,
+    join_lines_to_text,
     replace_spaces_with_tab,
     replace_tab_with_spaces,
     trim_line,
 )
 
 
-# --- Test Classes ---
+# --- Test Classes for Document Formating Functions ---
+
+class TestSplitTextToLines(unittest.TestCase):
+    def test_standard_text(self):
+        text = "Line 1\nLine 2\n\nLine 4\n"
+        lines = split_text_to_lines(text)
+        self.assertListEqual(lines,
+            [
+                "Line 1",
+                "Line 2",
+                "",
+                "Line 4",
+            ]
+        )
+
+    def test_windows_text(self):
+        text = "Line 1\r\n\r\nThis is Line 3\r\nLine 4\r\n"
+        lines = split_text_to_lines(text)
+        self.assertListEqual(lines,
+            [
+                "Line 1",
+                "",
+                "This is Line 3",
+                "Line 4",
+            ]
+        )
+
+    def test_mixed_text(self):
+        text = "Line A\n\r\nThis is Line C\r\nLine D"
+        lines = split_text_to_lines(text)
+        self.assertListEqual(lines,
+            [
+                "Line A",
+                "",
+                "This is Line C",
+                "Line D",
+            ]
+        )
+
+    def test_no_text(self):
+        text = ""
+        lines = split_text_to_lines(text)
+        self.assertListEqual(lines, [])
+
+
+class TestJoinLinesToText(unittest.TestCase):
+    def test_default_text(self):
+        lines = [
+                "Line 1",
+                "Line 2",
+                "",
+                "Line 4",
+            ]
+        text = join_lines_to_text(lines)
+        self.assertEqual(text, "Line 1\nLine 2\n\nLine 4")
+
+    def test_lf_text(self):
+        lines = [
+                "Line 1",
+                "Line 2",
+                "",
+                "Line 4",
+            ]
+        text = join_lines_to_text(lines, NewlineType.LF)
+        self.assertEqual(text, "Line 1\nLine 2\n\nLine 4")
+
+    def test_cr_lf_text(self):
+        lines = [
+                "Line 1",
+                "",
+                "This is Line 3",
+                "Line 4",
+            ]
+        text = join_lines_to_text(lines, NewlineType.CRLF)
+        self.assertEqual(text, "Line 1\r\n\r\nThis is Line 3\r\nLine 4")
+
+    def test_cr_text(self):
+        lines = [
+                "Line A",
+                "",
+                "",
+                "Line D",
+            ]
+        text = join_lines_to_text(lines, NewlineType.CR)
+        self.assertEqual(text, "Line A\r\r\rLine D")
+
+    def test_lr_cr_text(self):
+        lines = [
+                "Line A",
+                "",
+                "",
+                "Line D",
+            ]
+        text = join_lines_to_text(lines, NewlineType.LFCR)
+        self.assertEqual(text, "Line A\n\r\n\r\n\rLine D")
+
+    def test_no_lines(self):
+        lines = []
+        text = join_lines_to_text(lines)
+        self.assertEqual(text, "")
+
+
+# --- Test Classes for Line Formating Functions ---
 
 class TestReplaceSpacesWithTab(unittest.TestCase):
     def test_replace_single_tab(self):

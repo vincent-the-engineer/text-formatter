@@ -17,7 +17,49 @@ class TrimType(Enum):
     ALL = "all"
 
 
-# --- Public Functions ---
+# --- Public Document Formatting Functions ---
+
+def split_text_to_lines(text: str) -> list[str]:
+    """
+    Split text into lines of text using the newline characters.
+
+    Parameters:
+    text (str): The text to split.
+
+    Returns:
+    list[str]: The list of text lines.
+    """
+    return text.splitlines()
+
+
+def join_lines_to_text(lines: list[str],
+                       newline_type: NewlineType = NewlineType.LF) -> str:
+    """
+    Join lines of text using the specified newline character.
+
+    Parameters:
+    lines (list[str]): The list of text lines to join.
+
+    Returns:
+    str: The joined text.
+    """
+    if not isinstance(newline_type, NewlineType):
+        raise ValueError("Invalid NewlineType.")
+    return str(newline_type.value).join(lines)
+
+
+#def convert_file_to_lines(file_path: str) -> list[str]:
+#    with open(file_path) as f:
+#        text = f.read()
+#    return text_to_lines(text)
+#    pass
+
+
+#def convert_lines_to_file(file_path: str, lines: list[str]) -> None:
+#    pass
+
+
+# --- Public Line Formatting Functions ---
 
 def replace_spaces_with_tab(line: str, num_spaces: int) -> str:
     """
