@@ -1,5 +1,8 @@
 # --- Imports ---
+import os
 import unittest
+
+from pathlib import Path
 
 import textformatter
 from textformatter import textformatter
@@ -8,10 +11,18 @@ from textformatter.textformatter import (
     TrimType,
     split_text_to_lines,
     join_lines_to_text,
+    read_lines_from_file,
+    write_lines_to_file,
     replace_spaces_with_tab,
     replace_tab_with_spaces,
     trim_line,
 )
+
+
+# --- Constants ---
+TESTS_DIR = Path(__file__).parent
+DATA_DIR = TESTS_DIR / "data"
+OUTPUTS_DIR = TESTS_DIR / "outputs"
 
 
 # --- Test Classes for Document Formating Functions ---
@@ -100,20 +111,60 @@ class TestJoinLinesToText(unittest.TestCase):
         text = join_lines_to_text(lines, NewlineType.CR)
         self.assertEqual(text, "Line A\r\r\rLine D")
 
-    def test_lr_cr_text(self):
-        lines = [
-                "Line A",
-                "",
-                "",
-                "Line D",
-            ]
-        text = join_lines_to_text(lines, NewlineType.LFCR)
-        self.assertEqual(text, "Line A\n\r\n\r\n\rLine D")
-
     def test_no_lines(self):
         lines = []
         text = join_lines_to_text(lines)
         self.assertEqual(text, "")
+
+
+class TestReadLinesFromFile(unittest.TestCase):
+    def test_read_linux_file(self):
+        lines = read_lines_from_file(DATA_DIR / "read_file_linux.txt")
+        self.assertEqual(len(lines), 11)
+        self.assertTrue(lines[2].startswith("Lorem ipsum"))
+
+    def test_read_windows_file(self):
+        lines = read_lines_from_file(DATA_DIR / "read_file_windows.txt")
+        self.assertEqual(len(lines), 5)
+        self.assertTrue(lines[3].endswith("accumsan et."))
+
+
+class TestWriteLinesToFile(unittest.TestCase):
+    def test_write_linux_files(self):
+        file_path = OUTPUTS_DIR / "write_file_linux.txt"
+        _delete_file(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        lines = [
+                "Line 1",
+                "Line 2",
+                "",
+                "Line 4",
+            ]
+        newline_type = NewlineType.LF
+        write_lines_to_file(file_path, lines, newline_type)
+        self.assertTrue(os.path.exists(file_path))
+        file_content = _read_file_content(file_path, newline_type)
+        self.assertEqual(file_content, "Line 1\nLine 2\n\nLine 4")
+
+    def test_write_windows_file(self):
+        file_path = OUTPUTS_DIR / "write_file_windows.txt"
+        _delete_file(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        lines = [
+                "Line A",
+                "",
+                "Line C",
+                "",
+                "",
+            ]
+        newline_type = NewlineType.CRLF
+        write_lines_to_file(file_path, lines, newline_type)
+        self.assertTrue(os.path.exists(file_path))
+        file_content = _read_file_content(file_path, newline_type)
+        self.assertEqual(file_content, "Line A\r\n\r\nLine C\r\n\r\n")
 
 
 # --- Test Classes for Line Formating Functions ---
@@ -226,3 +277,16 @@ class TestTrimLine(unittest.TestCase):
         new_line = trim_line(line, TrimType.ALL)
         self.assertEqual(new_line, "")
 
+
+# --- Helper Functions ---
+
+def _delete_file(file_path: str) -> None:
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+
+def _read_file_content(file_path: str,
+                       newline_type: NewlineType = None) -> str:
+    with open(file_path, newline=newline_type.value) as f:
+        return f.read()
+ 

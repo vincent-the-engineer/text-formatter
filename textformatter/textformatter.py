@@ -8,7 +8,7 @@ class NewlineType(Enum):
     CR = "\r"
     CRLF = "\r\n"  # Windows
     LF = "\n"      # Unix, Linux, macOS
-    LFCR = "\n\r"
+
 
 class TrimType(Enum):
     NONE = "none"
@@ -39,6 +39,8 @@ def join_lines_to_text(lines: list[str],
 
     Parameters:
     lines (list[str]): The list of text lines to join.
+    newline_type (NewlineType): The newline character(s) to use. Default
+        value is linefeed character only.
 
     Returns:
     str: The joined text.
@@ -48,15 +50,42 @@ def join_lines_to_text(lines: list[str],
     return str(newline_type.value).join(lines)
 
 
-#def convert_file_to_lines(file_path: str) -> list[str]:
-#    with open(file_path) as f:
-#        text = f.read()
-#    return text_to_lines(text)
-#    pass
+def read_lines_from_file(file_path: str) -> list[str]:
+    """
+    Read a file and then split its text into lines of text using the
+    newline characters.
+
+    Parameters:
+    file_path (str): The file to read.
+
+    Returns:
+    list[str]: The list of text lines.
+    """
+    with open(file_path) as f:
+        text = f.read()
+    return split_text_to_lines(text)
 
 
-#def convert_lines_to_file(file_path: str, lines: list[str]) -> None:
-#    pass
+def write_lines_to_file(file_path: str, lines: list[str],
+                        newline_type: NewlineType = NewlineType.LF) -> None:
+    """
+    Join lines of text using the specified newline character and write
+    the text to a file.
+
+    Parameters:
+    file_path (str): The file to write to.
+    lines (list[str]): The list of text lines to join.
+    newline_type (NewlineType): The newline character(s) to use. Default
+        value is the linefeed character only.
+
+    Returns:
+    None
+    """
+    # Use default newline for lines.
+    # Write file will handle the newline characters.
+    text = join_lines_to_text(lines)
+    with open(file_path, "w", newline=newline_type.value) as f:
+        f.write(text)
 
 
 # --- Public Line Formatting Functions ---
