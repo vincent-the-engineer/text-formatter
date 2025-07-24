@@ -7,15 +7,21 @@ from pathlib import Path
 import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
+    # Classes
+    CaseType,
     NewlineType,
     TrimType,
+    # Document formatting functions
     split_text_to_lines,
     join_lines_to_text,
     read_lines_from_file,
     write_lines_to_file,
+    # Line whitespace formatting functions
     replace_spaces_with_tab,
     replace_tab_with_spaces,
     trim_line,
+    # Line text formatting functions
+    convert_case,
 )
 
 
@@ -167,7 +173,7 @@ class TestWriteLinesToFile(unittest.TestCase):
         self.assertEqual(file_content, "Line A\r\n\r\nLine C\r\n\r\n")
 
 
-# --- Test Classes for Line Formating Functions ---
+# --- Test Classes for Line Whitespace Formating Functions ---
 
 class TestReplaceSpacesWithTab(unittest.TestCase):
     def test_replace_single_tab(self):
@@ -252,11 +258,6 @@ class TestTrimLine(unittest.TestCase):
         new_line = trim_line(line)
         self.assertEqual(new_line, line)
 
-    def test_no_trim(self):
-        line = "   No trim please   "
-        new_line = trim_line(line, TrimType.NONE)
-        self.assertEqual(new_line, line)
-
     def test_trim_leading(self):
         line = " \t  Trim leading test  \t "
         new_line = trim_line(line, TrimType.LEADING)
@@ -275,6 +276,30 @@ class TestTrimLine(unittest.TestCase):
     def test_trim_empty_str(self):
         line = ""
         new_line = trim_line(line, TrimType.ALL)
+        self.assertEqual(new_line, "")
+
+
+# --- Test Classes for Line Text Formating Functions ---
+
+class TestConvertCase(unittest.TestCase):
+    def test_default(self):
+        line = "Hello world!"
+        new_line = convert_case(line)
+        self.assertEqual(new_line, line)
+
+    def test_lowercase(self):
+        line = "Hello world!"
+        new_line = convert_case(line, CaseType.UPPER)
+        self.assertEqual(new_line, "HELLO WORLD!")
+
+    def test_uppercase(self):
+        line = "Hello world!"
+        new_line = convert_case(line, CaseType.LOWER)
+        self.assertEqual(new_line, "hello world!")
+
+    def test_empty_str(self):
+        line = ""
+        new_line = convert_case(line, CaseType.UPPER)
         self.assertEqual(new_line, "")
 
 

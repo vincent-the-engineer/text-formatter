@@ -5,6 +5,12 @@ from enum import Enum
 
 # --- Classes ---
 
+class CaseType(Enum):
+    LOWER = "lower"
+    UPPER = "upper"
+#    TITLE = "title"  # TODO later due to complexity
+
+
 class NewlineType(Enum):
     CR = "\r"
     CRLF = "\r\n"  # Windows
@@ -12,7 +18,6 @@ class NewlineType(Enum):
 
 
 class TrimType(Enum):
-    NONE = "none"
     LEADING = "leading"
     TRAILING = "trailing"
     ALL = "all"
@@ -83,13 +88,13 @@ def write_lines_to_file(file_path: str, lines: Sequence[str],
     None
     """
     # Use default newline for lines.
-    # Write file will handle the newline characters.
+    # Write file will write the correct newline characters.
     text = join_lines_to_text(lines)
     with open(file_path, "w", newline=newline_type.value) as f:
         f.write(text)
 
 
-# --- Public Line Formatting Functions ---
+# --- Public Line Whitespace Formatting Functions ---
 
 def replace_spaces_with_tab(line: str, num_spaces: int) -> str:
     """
@@ -140,7 +145,7 @@ def trim_line(line: str, trim_type: TrimType = None) -> str:
     Returns:
     str: The trimmed line of text.
     """
-    if trim_type is None or trim_type == TrimType.NONE:
+    if trim_type is None:
         return line
     if trim_type == TrimType.LEADING:
         return line.lstrip()
@@ -149,4 +154,27 @@ def trim_line(line: str, trim_type: TrimType = None) -> str:
     if trim_type == TrimType.ALL:
         return line.strip()
     raise ValueError("Invalid TrimType")
+
+
+# --- Public Line Text Formatting Functions ---
+
+def convert_case(line: str, case_type: CaseType = None) -> str:
+    """
+    Convert the letter case of the line of text.
+
+    Parameters:
+    line (str): The line of text to convert.
+    case_type (CaseType): The letter case option. Defaults to None,
+        which means no conversion.
+
+    Returns:
+    str: The line of text with the letter case converted.
+    """
+    if case_type is None:
+        return line
+    if case_type == CaseType.LOWER:
+        return line.lower()
+    if case_type == CaseType.UPPER:
+        return line.upper()
+    raise ValueError("Invalid CaseType")
 
