@@ -17,6 +17,11 @@ class NewlineType(Enum):
     LF = "\n"      # Unix, Linux, macOS
 
 
+class BlankLineType(Enum):
+    REMOVE = "remove"
+    COLLAPSE = "collapse"
+
+
 class TrimType(Enum):
     LEADING = "leading"
     TRAILING = "trailing"
@@ -94,6 +99,38 @@ def write_lines_to_file(file_path: str, lines: Sequence[str],
         f.write(text)
 
 
+def remove_blank_lines(lines: Sequence[str],
+                       blank_line_type: BlankLineType = None) -> list[str]:
+    """
+    Remove the blank lines using the specified option and return the
+    result.
+
+    Parameters:
+    lines (Sequence[str]): The list of text lines to remove blank lines.
+    blank_line_type (BlankLineType): The remove blank line option. Default
+        value is None, which means no removal.
+
+    Returns:
+    The list of text lines with the blank lines removed.
+    """
+    if blank_line_type is None:
+        return lines.copy()
+    if blank_line_type == BlankLineType.REMOVE:
+        return list(filter(lambda s: s, lines))
+    if blank_line_type == BlankLineType.COLLAPSE:
+        new_lines = []
+        is_last_line_empty = False
+        for line in lines:
+            if line:
+                new_lines.append(line)
+                is_last_line_empty = False
+            elif not is_last_line_empty:
+                new_lines.append(line)
+                is_last_line_empty = True
+        return new_lines
+    raise ValueError("Invalid BlankLineType")
+
+
 # --- Public Line Whitespace Formatting Functions ---
 
 def replace_spaces_with_tab(line: str, num_spaces: int) -> str:
@@ -160,7 +197,7 @@ def trim_line(line: str, trim_type: TrimType = None) -> str:
 
 def convert_case(line: str, case_type: CaseType = None) -> str:
     """
-    Convert the letter case of the line of text.
+    Convert the letter case of the line of text and return the result.
 
     Parameters:
     line (str): The line of text to convert.

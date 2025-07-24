@@ -8,6 +8,7 @@ import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
     # Classes
+    BlankLineType,
     CaseType,
     NewlineType,
     TrimType,
@@ -16,6 +17,7 @@ from textformatter.textformatter import (
     join_lines_to_text,
     read_lines_from_file,
     write_lines_to_file,
+    remove_blank_lines,
     # Line whitespace formatting functions
     replace_spaces_with_tab,
     replace_tab_with_spaces,
@@ -171,6 +173,66 @@ class TestWriteLinesToFile(unittest.TestCase):
         self.assertTrue(os.path.exists(file_path))
         file_content = _read_file_content(file_path, newline_type)
         self.assertEqual(file_content, "Line A\r\n\r\nLine C\r\n\r\n")
+
+
+class TestRemoveBlankLines(unittest.TestCase):
+    def test_default(self):
+        lines = [
+            "Line 1",
+            "",
+            "Line 3",
+            "",
+        ]
+        new_lines = remove_blank_lines(lines)
+        self.assertListEqual(new_lines, lines)
+
+    def test_remove_all(self):
+        lines = [
+            "Line 1",
+            "",
+            "Line 3",
+            "",
+            "",
+            "Line 6",
+            "",
+        ]
+        new_lines = remove_blank_lines(lines, BlankLineType.REMOVE)
+        self.assertListEqual(new_lines,
+            [
+                "Line 1",
+                "Line 3",
+                "Line 6",
+            ]
+        )
+
+    def test_collpase(self):
+        lines = [
+            "Line 1",
+            "",
+            "Line 3",
+            "",
+            "",
+            "",
+            "Line 7",
+            "",
+            "",
+        ]
+        new_lines = remove_blank_lines(lines, BlankLineType.COLLAPSE)
+        self.assertListEqual(new_lines,
+            [
+                "Line 1",
+                "",
+                "Line 3",
+                "",
+                "Line 7",
+                "",
+            ]
+        )
+
+    def test_empty_list(self):
+        lines = []
+        new_lines = remove_blank_lines(lines, BlankLineType.REMOVE)
+        self.assertListEqual(new_lines, [])
 
 
 # --- Test Classes for Line Whitespace Formating Functions ---
