@@ -1,4 +1,5 @@
 # --- Imports ---
+from collections.abc import Sequence
 from enum import Enum
 
 
@@ -32,13 +33,13 @@ def split_text_to_lines(text: str) -> list[str]:
     return text.splitlines()
 
 
-def join_lines_to_text(lines: list[str],
+def join_lines_to_text(lines: Sequence[str],
                        newline_type: NewlineType = NewlineType.LF) -> str:
     """
     Join lines of text using the specified newline character.
 
     Parameters:
-    lines (list[str]): The list of text lines to join.
+    lines (Sequence[str]): The list of text lines to join.
     newline_type (NewlineType): The newline character(s) to use. Default
         value is linefeed character only.
 
@@ -66,7 +67,7 @@ def read_lines_from_file(file_path: str) -> list[str]:
     return split_text_to_lines(text)
 
 
-def write_lines_to_file(file_path: str, lines: list[str],
+def write_lines_to_file(file_path: str, lines: Sequence[str],
                         newline_type: NewlineType = NewlineType.LF) -> None:
     """
     Join lines of text using the specified newline character and write
@@ -74,7 +75,7 @@ def write_lines_to_file(file_path: str, lines: list[str],
 
     Parameters:
     file_path (str): The file to write to.
-    lines (list[str]): The list of text lines to join.
+    lines (Sequence[str]): The list of text lines to join.
     newline_type (NewlineType): The newline character(s) to use. Default
         value is the linefeed character only.
 
