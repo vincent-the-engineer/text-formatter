@@ -1,0 +1,9 @@
+[project]
+name = "text-formatter"
+version = "0.1.0"
+description = "A utility tool for formatting text and text files."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0.2",
+]

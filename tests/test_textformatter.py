@@ -28,12 +28,12 @@ from textformatter.textformatter import (
 
 
 # --- Constants ---
-TESTS_DIR = Path(__file__).parent
-DATA_DIR = TESTS_DIR / "data"
-OUTPUTS_DIR = TESTS_DIR / "outputs"
+TESTS_DIR: Path = Path(__file__).parent
+DATA_DIR: Path = TESTS_DIR / "data"
+OUTPUTS_DIR: Path = TESTS_DIR / "outputs"
 
 
-# --- Test Classes for Document Formating Functions ---
+# --- Test Classes for Document Formatting Functions ---
 
 class TestSplitTextToLines(unittest.TestCase):
     def test_standard_text(self):
@@ -81,21 +81,21 @@ class TestSplitTextToLines(unittest.TestCase):
 class TestJoinLinesToText(unittest.TestCase):
     def test_default_text(self):
         lines = [
-                "Line 1",
-                "Line 2",
-                "",
-                "Line 4",
-            ]
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
         text = join_lines_to_text(lines)
         self.assertEqual(text, "Line 1\nLine 2\n\nLine 4")
 
     def test_lf_text(self):
         lines = [
-                "Line 1",
-                "Line 2",
-                "",
-                "Line 4",
-            ]
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
         text = join_lines_to_text(lines, NewlineType.LF)
         self.assertEqual(text, "Line 1\nLine 2\n\nLine 4")
 
@@ -111,11 +111,11 @@ class TestJoinLinesToText(unittest.TestCase):
 
     def test_cr_text(self):
         lines = [
-                "Line A",
-                "",
-                "",
-                "Line D",
-            ]
+            "Line A",
+            "",
+            "",
+            "Line D",
+        ]
         text = join_lines_to_text(lines, NewlineType.CR)
         self.assertEqual(text, "Line A\r\r\rLine D")
 
@@ -143,11 +143,11 @@ class TestWriteLinesToFile(unittest.TestCase):
         _delete_file(file_path)
         self.assertFalse(os.path.exists(file_path))
         lines = [
-                "Line 1",
-                "Line 2",
-                "",
-                "Line 4",
-            ]
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
         newline_type = NewlineType.LF
         write_lines_to_file(file_path, lines, newline_type)
         self.assertTrue(os.path.exists(file_path))
@@ -162,12 +162,12 @@ class TestWriteLinesToFile(unittest.TestCase):
             os.remove(file_path)
         self.assertFalse(os.path.exists(file_path))
         lines = [
-                "Line A",
-                "",
-                "Line C",
-                "",
-                "",
-            ]
+            "Line A",
+            "",
+            "Line C",
+            "",
+            "",
+        ]
         newline_type = NewlineType.CRLF
         write_lines_to_file(file_path, lines, newline_type)
         self.assertTrue(os.path.exists(file_path))
@@ -235,7 +235,7 @@ class TestRemoveBlankLines(unittest.TestCase):
         self.assertListEqual(new_lines, [])
 
 
-# --- Test Classes for Line Whitespace Formating Functions ---
+# --- Test Classes for Line Whitespace Formatting Functions ---
 
 class TestReplaceSpacesWithTab(unittest.TestCase):
     def test_replace_single_tab(self):
@@ -341,7 +341,7 @@ class TestTrimLine(unittest.TestCase):
         self.assertEqual(new_line, "")
 
 
-# --- Test Classes for Line Text Formating Functions ---
+# --- Test Classes for Line Text Formatting Functions ---
 
 class TestConvertCase(unittest.TestCase):
     def test_default(self):
