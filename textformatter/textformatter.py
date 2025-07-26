@@ -5,6 +5,12 @@ from enum import Enum
 
 # --- Classes ---
 
+class TrimType(Enum):
+    LEADING = "leading"
+    TRAILING = "trailing"
+    ALL = "all"
+
+
 class CaseType(Enum):
     LOWER = "lower"
     UPPER = "upper"
@@ -20,12 +26,6 @@ class NewlineType(Enum):
 class BlankLineType(Enum):
     REMOVE = "remove"
     COLLAPSE = "collapse"
-
-
-class TrimType(Enum):
-    LEADING = "leading"
-    TRAILING = "trailing"
-    ALL = "all"
 
 
 # --- Public Document Formatting Functions ---
@@ -195,7 +195,7 @@ def trim_line(line: str, trim_type: TrimType = None) -> str:
 
 # --- Public Line Text Formatting Functions ---
 
-def convert_case(line: str, case_type: CaseType = None) -> str:
+def convert_case(line: str, case_type: CaseType=None) -> str:
     """
     Convert the letter case of the line of text and return the result.
 
