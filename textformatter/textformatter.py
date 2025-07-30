@@ -1,6 +1,7 @@
 # --- Imports ---
 from collections.abc import Sequence
 from enum import Enum
+from typing import Self
 
 
 # --- Private Constants ---
@@ -13,10 +14,9 @@ _WHITESPACE = "whitespace"
 
 # --- Classes ---
 
-class TrimType(Enum):
-    LEADING = "leading"
-    TRAILING = "trailing"
-    ALL = "all"
+class BlankLineType(Enum):
+    REMOVE = "remove"
+    COLLAPSE = "collapse"
 
 
 class CaseType(Enum):
@@ -31,30 +31,56 @@ class NewlineType(Enum):
     LF = "\n"      # Unix, Linux, macOS
 
 
-class BlankLineType(Enum):
-    REMOVE = "remove"
-    COLLAPSE = "collapse"
+class TrimType(Enum):
+    LEADING = "leading"
+    TRAILING = "trailing"
+    ALL = "all"
 
 
 class TextFormatterConfig:
     def __init__(self, *, blank_line_type=None, case_type=None,
-                 newline_type=None, trim_type=None):
+                 newline_type=None, trim_type=None) -> None:
         self.blank_line_type = blank_line_type
         self.case_type = case_type
         self.newline_type = newline_type
         self.trim_type = trim_type
 
-    def __dict__(self):
+    @classmethod
+    def from_dict(cls, data: dict) -> Self:
+        config = TextFormatterConfig()
+        try:
+            config.case_type = CaseType(data.get(_LETTER_CASE))
+        except ValueError:
+            config.case_type = None
+        try:
+            config.newline_type = NewlineType(data.get(_NEWLINE))
+        except ValueError:
+            config.newline_type = None
+        whitespace_dict = data.get(_WHITESPACE)
+        if whitespace_dict:
+            try:
+                config.blank_line_type = BlankLineType(
+                    whitespace_dict.get(_BLANK_LINES)
+                )
+            except ValueError:
+                config.blank_line_type = None
+            try:
+                config.trim_type = TrimType(whitespace_dict.get(_TRIM))
+            except ValueError:
+                config.trim_type = None
+        return config
+
+    def to_dict(self) -> dict:
         whitespace_dict = {}
-        if self.BlankLineType is not None:
-            whitespace_dict[_BLANK_LINES] = self.BlankLineType.value
-        if self.TrimType is not None:
-            whitespace_dict[_TRIM] = self.TrimType.value
+        if self.blank_line_type is not None:
+            whitespace_dict[_BLANK_LINES] = self.blank_line_type.value
+        if self.trim_type is not None:
+            whitespace_dict[_TRIM] = self.trim_type.value
         result = {}
-        if self.CaseType is not None:
-            result[_LETTER_CASE] = self.CaseType.value
-        if self.NewLineType is not None:
-            result[_NEWLINE] = self.NewLineType.value
+        if self.case_type is not None:
+            result[_LETTER_CASE] = self.case_type.value
+        if self.newline_type is not None:
+            result[_NEWLINE] = self.newline_type.value
         if whitespace_dict:
             result[_WHITESPACE] = whitespace_dict
         return result

@@ -7,6 +7,12 @@ from pathlib import Path
 import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
+    # Constants
+    _BLANK_LINES,
+    _LETTER_CASE,
+    _NEWLINE,
+    _TRIM,
+    _WHITESPACE,
     # Classes
     BlankLineType,
     CaseType,
@@ -36,11 +42,11 @@ OUTPUTS_DIR: Path = TESTS_DIR / "outputs"
 
 # --- Test Classes for TextFormatterConfig ---
 
-class TestTextFormatterConfigInit:
+class TestTextFormatterConfigInit(unittest.TestCase):
     def test_init_set_attributes(self):
         test_blank_line_type = BlankLineType.REMOVE
         test_case_type = CaseType.UPPER
-        test_newline_type = NewLineType.CRLF
+        test_newline_type = NewlineType.CRLF
         test_trim_type = TrimType.ALL
         config = TextFormatterConfig(blank_line_type=test_blank_line_type,
                                      case_type=test_case_type,
@@ -50,6 +56,40 @@ class TestTextFormatterConfigInit:
         self.assertEqual(config.case_type, test_case_type)
         self.assertEqual(config.newline_type, test_newline_type)
         self.assertEqual(config.trim_type, test_trim_type)
+
+
+class TestTextFormatterConfigFromDict(unittest.TestCase):
+    def test_dict(self):
+        config_dict = {
+            _NEWLINE: "\n",
+            _LETTER_CASE: "upper",
+            _WHITESPACE: {
+                _BLANK_LINES: "collapse",
+                _TRIM: "all",
+            },
+        }
+        config = TextFormatterConfig.from_dict(config_dict)
+        self.assertTrue(config is not None)
+        self.assertEqual(config.blank_line_type, BlankLineType.COLLAPSE)
+        self.assertEqual(config.case_type, CaseType.UPPER)
+        self.assertEqual(config.newline_type, NewlineType.LF)
+        self.assertEqual(config.trim_type, TrimType.ALL)
+
+class TestTextFormatterConfigToDict(unittest.TestCase):
+    def test_dict(self):
+        config = TextFormatterConfig(
+            blank_line_type=BlankLineType.REMOVE,
+            case_type=CaseType.LOWER,
+            newline_type=NewlineType.CRLF,
+            trim_type=TrimType.TRAILING,
+            )
+        config_dict = config.to_dict()
+        self.assertEqual(config_dict.get(_LETTER_CASE), "lower")
+        self.assertEqual(config_dict.get(_NEWLINE), "\r\n")
+        whitespace_dict = config_dict.get(_WHITESPACE)
+        self.assertTrue(whitespace_dict is not None)
+        self.assertEqual(whitespace_dict.get(_BLANK_LINES), "remove")
+        self.assertEqual(whitespace_dict.get(_TRIM), "trailing")
 
 
 # --- Test Classes for Document Formatting Functions ---
