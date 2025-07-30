@@ -7,8 +7,6 @@ from pathlib import Path
 import textformatter
 from textformatter import config
 from textformatter.config import (
-    # Classes,
-    TextFormatterConfig,
     # Configuration file reading/writing functions
     read_config,
     write_config,
@@ -19,24 +17,6 @@ from textformatter.config import (
 TESTS_DIR: Path = Path(__file__).parent
 DATA_DIR: Path = TESTS_DIR / "data"
 OUTPUTS_DIR: Path = TESTS_DIR / "outputs"
-
-
-# --- Test Classes for TextFormatterConfig ---
-
-class TestTextFormatterConfigInit:
-    def test_init_set_attributes(self):
-        test_blank_line_type = BlankLineType.REMOVE
-        test_case_type = CaseType.UPPER
-        test_newline_type = NewLineType.CRLF
-        test_trim_type = TrimType.ALL
-        config = TextFormatterConfig(blank_line_type=test_blank_line_type,
-                                     case_type=test_case_type,
-                                     newline_type=test_newline_type,
-                                     trim_type=test_trim_type)
-        self.assertEqual(config.blank_line_type, test_blank_line_type)
-        self.assertEqual(config.case_type, test_case_type)
-        self.assertEqual(config.newline_type, test_newline_type)
-        self.assertEqual(config.trim_type, test_trim_type)
 
 
 # --- Test Classes for Reading/Writing Configuration Files ---

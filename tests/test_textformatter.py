@@ -12,8 +12,9 @@ from textformatter.textformatter import (
     CaseType,
     NewlineType,
     TrimType,
+    TextFormatterConfig,
     # Document formatting functions
-    split_text_to_lines,
+   split_text_to_lines,
     join_lines_to_text,
     read_lines_from_file,
     write_lines_to_file,
@@ -31,6 +32,24 @@ from textformatter.textformatter import (
 TESTS_DIR: Path = Path(__file__).parent
 DATA_DIR: Path = TESTS_DIR / "data"
 OUTPUTS_DIR: Path = TESTS_DIR / "outputs"
+
+
+# --- Test Classes for TextFormatterConfig ---
+
+class TestTextFormatterConfigInit:
+    def test_init_set_attributes(self):
+        test_blank_line_type = BlankLineType.REMOVE
+        test_case_type = CaseType.UPPER
+        test_newline_type = NewLineType.CRLF
+        test_trim_type = TrimType.ALL
+        config = TextFormatterConfig(blank_line_type=test_blank_line_type,
+                                     case_type=test_case_type,
+                                     newline_type=test_newline_type,
+                                     trim_type=test_trim_type)
+        self.assertEqual(config.blank_line_type, test_blank_line_type)
+        self.assertEqual(config.case_type, test_case_type)
+        self.assertEqual(config.newline_type, test_newline_type)
+        self.assertEqual(config.trim_type, test_trim_type)
 
 
 # --- Test Classes for Document Formatting Functions ---
