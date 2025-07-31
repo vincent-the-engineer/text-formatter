@@ -40,6 +40,16 @@ DATA_DIR: Path = TESTS_DIR / "data"
 OUTPUTS_DIR: Path = TESTS_DIR / "outputs"
 
 
+# --- Test Classes for Enum Classes ---
+class TestNewlineType(unittest.TestCase):
+    def test_to_file_eol(self):
+        self.assertEqual(NewlineType.CR.to_file_eol(), "\r")
+        self.assertEqual(NewlineType.CRLF.to_file_eol(), "\r\n")
+        self.assertEqual(NewlineType.LF.to_file_eol(), "\n")
+        self.assertTrue(NewlineType.SPACE.to_file_eol() is None)
+        self.assertTrue(NewlineType.REMOVE.to_file_eol() is None)
+
+
 # --- Test Classes for TextFormatterConfig ---
 
 class TestTextFormatterConfigInit(unittest.TestCase):
@@ -183,6 +193,26 @@ class TestJoinLinesToText(unittest.TestCase):
         text = join_lines_to_text(lines)
         self.assertEqual(text, "")
 
+    def test_space(self):
+        lines = [
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
+        text = join_lines_to_text(lines, NewlineType.SPACE)
+        self.assertEqual(text, "Line 1 Line 2  Line 4")
+
+    def test_remove(self):
+        lines = [
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
+        text = join_lines_to_text(lines, NewlineType.REMOVE)
+        self.assertEqual(text, "Line 1Line 2Line 4")
+
 
 class TestReadLinesFromFile(unittest.TestCase):
     def test_read_linux_file(self):
@@ -197,7 +227,7 @@ class TestReadLinesFromFile(unittest.TestCase):
 
 
 class TestWriteLinesToFile(unittest.TestCase):
-    def test_write_linux_files(self):
+    def test_write_linux_file(self):
         file_path = OUTPUTS_DIR / "write_file_linux.txt"
         _delete_file(file_path)
         self.assertFalse(os.path.exists(file_path))
@@ -233,7 +263,39 @@ class TestWriteLinesToFile(unittest.TestCase):
         file_content = _read_file_content(file_path, newline_type)
         self.assertEqual(file_content, "Line A\r\n\r\nLine C\r\n\r\n")
 
+    def test_write_replace_newline_with_space_file(self):
+        file_path = OUTPUTS_DIR / "write_replace_newline_with_space.txt"
+        _delete_file(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        lines = [
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
+        newline_type = NewlineType.SPACE
+        write_lines_to_file(file_path, lines, newline_type)
+        self.assertTrue(os.path.exists(file_path))
+        file_content = _read_file_content(file_path, newline_type)
+        self.assertEqual(file_content, "Line 1 Line 2  Line 4")
 
+    def test_write_remove_newline_file(self):
+        file_path = OUTPUTS_DIR / "write_remove_newline.txt"
+        _delete_file(file_path)
+        self.assertFalse(os.path.exists(file_path))
+        lines = [
+            "Line 1",
+            "Line 2",
+            "",
+            "Line 4",
+        ]
+        newline_type = NewlineType.REMOVE
+        write_lines_to_file(file_path, lines, newline_type)
+        self.assertTrue(os.path.exists(file_path))
+        file_content = _read_file_content(file_path, newline_type)
+        self.assertEqual(file_content, "Line 1Line 2Line 4")
+
+ 
 class TestRemoveBlankLines(unittest.TestCase):
     def test_default(self):
         lines = [
@@ -433,6 +495,10 @@ def _delete_file(file_path: str) -> None:
 
 def _read_file_content(file_path: str,
                        newline_type: NewlineType = None) -> str:
-    with open(file_path, newline=newline_type.value) as f:
+    if newline_type:
+        newline_value = newline_type.to_file_eol()
+    else:
+        newline_value = None
+    with open(file_path, newline=newline_value) as f:
         return f.read()
- 
+

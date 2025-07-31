@@ -29,6 +29,14 @@ class NewlineType(Enum):
     CR = "\r"
     CRLF = "\r\n"  # Windows
     LF = "\n"      # Unix, Linux, macOS
+    SPACE = " "    # Replace with space
+    REMOVE = ""
+
+    def to_file_eol(self) -> str:
+        if self == NewlineType.SPACE or self == NewlineType.REMOVE:
+            return None
+        else:
+            return self.value
 
 
 class TrimType(Enum):
@@ -150,10 +158,17 @@ def write_lines_to_file(file_path: str, lines: Sequence[str],
     Returns:
     None
     """
-    # Use default newline for lines.
-    # Write file will write the correct newline characters.
-    text = join_lines_to_text(lines)
-    with open(file_path, "w", newline=newline_type.value) as f:
+    if not isinstance(newline_type, NewlineType):
+        raise ValueError("Invalid NewlineType.")
+    newline_value = newline_type.to_file_eol()
+    if newline_value:
+        # Use default newline for lines.
+        # Write file will write the correct newline characters.
+        text = join_lines_to_text(lines)
+    else:
+        # Join as a single line.
+        text = join_lines_to_text(lines, newline_type)
+    with open(file_path, "w", newline=newline_value) as f:
         f.write(text)
 
 
