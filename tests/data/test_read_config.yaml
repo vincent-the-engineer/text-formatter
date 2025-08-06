@@ -1,0 +1,8 @@
+---
+# A sample configuration file
+newline: \r\n
+letter-case: lower
+whitespace:
+  trim: "trailing"
+  blank-lines: "remove"
+

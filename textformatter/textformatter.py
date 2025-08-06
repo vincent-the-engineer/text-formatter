@@ -35,8 +35,34 @@ class NewlineType(Enum):
     def to_file_eol(self) -> str:
         if self == NewlineType.SPACE or self == NewlineType.REMOVE:
             return None
-        else:
-            return self.value
+        return self.value
+
+    @classmethod
+    def from_text(cls,  text: str) -> Self:
+        if text == "\\n":
+            return NewlineType.LF
+        if text == "\\r\\n":
+            return NewlineType.CRLF
+        if text == "\\r":
+            return NewlineType.CR
+        if text == "space":
+            return NewlineType.SPACE
+        if text == "remove":
+            return NewlineType.REMOVE
+        return None
+
+    def to_text(self) -> str:
+        if self == NewlineType.LF:
+            return "\\n"
+        if self == NewlineType.CRLF:
+            return "\\r\\n"
+        if self == NewlineType.CR:
+            return "\\r"
+        if self == NewlineType.SPACE:
+            return "space"
+        if self == NewlineType.REMOVE:
+            return "remove"
+        raise ValueError("Unsupported NewlineType")
 
 
 class TrimType(Enum):
@@ -61,7 +87,7 @@ class TextFormatterConfig:
         except ValueError:
             config.case_type = None
         try:
-            config.newline_type = NewlineType(data.get(_NEWLINE))
+            config.newline_type = NewlineType.from_text(data.get(_NEWLINE))
         except ValueError:
             config.newline_type = None
         whitespace_dict = data.get(_WHITESPACE)
@@ -88,7 +114,7 @@ class TextFormatterConfig:
         if self.case_type is not None:
             result[_LETTER_CASE] = self.case_type.value
         if self.newline_type is not None:
-            result[_NEWLINE] = self.newline_type.value
+            result[_NEWLINE] = self.newline_type.to_text()
         if whitespace_dict:
             result[_WHITESPACE] = whitespace_dict
         return result

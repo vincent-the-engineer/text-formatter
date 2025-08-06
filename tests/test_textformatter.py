@@ -49,6 +49,19 @@ class TestNewlineType(unittest.TestCase):
         self.assertTrue(NewlineType.SPACE.to_file_eol() is None)
         self.assertTrue(NewlineType.REMOVE.to_file_eol() is None)
 
+    def test_from_text(self):
+        self.assertEqual(NewlineType.from_text("\\r"), NewlineType.CR)
+        self.assertEqual(NewlineType.from_text("\\r\\n"), NewlineType.CRLF)
+        self.assertEqual(NewlineType.from_text("\\n"), NewlineType.LF)
+        self.assertEqual(NewlineType.from_text("space"), NewlineType.SPACE)
+        self.assertEqual(NewlineType.from_text("remove"), NewlineType.REMOVE)
+
+    def test_to_text(self):
+        self.assertEqual(NewlineType.CR.to_text(), "\\r")
+        self.assertEqual(NewlineType.CRLF.to_text(), "\\r\\n")
+        self.assertEqual(NewlineType.LF.to_text(), "\\n")
+        self.assertEqual(NewlineType.SPACE.to_text(), "space")
+        self.assertEqual(NewlineType.REMOVE.to_text(), "remove")
 
 # --- Test Classes for TextFormatterConfig ---
 
@@ -71,7 +84,7 @@ class TestTextFormatterConfigInit(unittest.TestCase):
 class TestTextFormatterConfigFromDict(unittest.TestCase):
     def test_dict(self):
         config_dict = {
-            _NEWLINE: "\n",
+            _NEWLINE: "\\n",
             _LETTER_CASE: "upper",
             _WHITESPACE: {
                 _BLANK_LINES: "collapse",
@@ -95,7 +108,7 @@ class TestTextFormatterConfigToDict(unittest.TestCase):
             )
         config_dict = config.to_dict()
         self.assertEqual(config_dict.get(_LETTER_CASE), "lower")
-        self.assertEqual(config_dict.get(_NEWLINE), "\r\n")
+        self.assertEqual(config_dict.get(_NEWLINE), "\\r\\n")
         whitespace_dict = config_dict.get(_WHITESPACE)
         self.assertTrue(whitespace_dict is not None)
         self.assertEqual(whitespace_dict.get(_BLANK_LINES), "remove")
