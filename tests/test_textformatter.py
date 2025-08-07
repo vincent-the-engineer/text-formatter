@@ -8,6 +8,7 @@ import textformatter
 from textformatter import textformatter
 from textformatter.textformatter import (
     # Constants
+    _BACKUP_FILE,
     _BLANK_LINES,
     _LETTER_CASE,
     _NEWLINE,
@@ -71,10 +72,12 @@ class TestTextFormatterConfigInit(unittest.TestCase):
         test_case_type = CaseType.UPPER
         test_newline_type = NewlineType.CRLF
         test_trim_type = TrimType.ALL
-        config = TextFormatterConfig(blank_line_type=test_blank_line_type,
+        config = TextFormatterConfig(backup_file=False,
+                                     blank_line_type=test_blank_line_type,
                                      case_type=test_case_type,
                                      newline_type=test_newline_type,
                                      trim_type=test_trim_type)
+        self.assertEqual(config.backup_file, False)
         self.assertEqual(config.blank_line_type, test_blank_line_type)
         self.assertEqual(config.case_type, test_case_type)
         self.assertEqual(config.newline_type, test_newline_type)
@@ -84,6 +87,7 @@ class TestTextFormatterConfigInit(unittest.TestCase):
 class TestTextFormatterConfigFromDict(unittest.TestCase):
     def test_dict(self):
         config_dict = {
+            _BACKUP_FILE: "false",
             _NEWLINE: "\\n",
             _LETTER_CASE: "upper",
             _WHITESPACE: {
@@ -93,6 +97,7 @@ class TestTextFormatterConfigFromDict(unittest.TestCase):
         }
         config = TextFormatterConfig.from_dict(config_dict)
         self.assertTrue(config is not None)
+        self.assertEqual(config.backup_file, False)
         self.assertEqual(config.blank_line_type, BlankLineType.COLLAPSE)
         self.assertEqual(config.case_type, CaseType.UPPER)
         self.assertEqual(config.newline_type, NewlineType.LF)
@@ -101,12 +106,14 @@ class TestTextFormatterConfigFromDict(unittest.TestCase):
 class TestTextFormatterConfigToDict(unittest.TestCase):
     def test_dict(self):
         config = TextFormatterConfig(
+            backup_file=False,
             blank_line_type=BlankLineType.REMOVE,
             case_type=CaseType.LOWER,
             newline_type=NewlineType.CRLF,
             trim_type=TrimType.TRAILING,
             )
         config_dict = config.to_dict()
+        self.assertEqual(config_dict.get(_BACKUP_FILE), "false")
         self.assertEqual(config_dict.get(_LETTER_CASE), "lower")
         self.assertEqual(config_dict.get(_NEWLINE), "\\r\\n")
         whitespace_dict = config_dict.get(_WHITESPACE)

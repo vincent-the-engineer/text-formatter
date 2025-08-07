@@ -5,6 +5,7 @@ from typing import Self
 
 
 # --- Private Constants ---
+_BACKUP_FILE = "backup-file"
 _BLANK_LINES = "blank-lines"
 _LETTER_CASE = "letter-case"
 _NEWLINE = "newline"
@@ -72,8 +73,13 @@ class TrimType(Enum):
 
 
 class TextFormatterConfig:
-    def __init__(self, *, blank_line_type=None, case_type=None,
-                 newline_type=None, trim_type=None) -> None:
+    def __init__(self, *,
+                 backup_file: bool=True,
+                 blank_line_type: BlankLineType=None,
+                 case_type: CaseType=None,
+                 newline_type: NewlineType=None,
+                 trim_type: TrimType=None) -> None:
+        self.backup_file = backup_file
         self.blank_line_type = blank_line_type
         self.case_type = case_type
         self.newline_type = newline_type
@@ -83,13 +89,23 @@ class TextFormatterConfig:
     def from_dict(cls, data: dict) -> Self:
         config = TextFormatterConfig()
         try:
+            value = data.get(_BACKUP_FILE)
+            if value is not None:
+                value = value.lower()
+                if value == "true":
+                    config.backup_file = True
+                elif value == "false":
+                    config.backup_file = False
+        except ValueError:
+            pass
+        try:
             config.case_type = CaseType(data.get(_LETTER_CASE))
         except ValueError:
-            config.case_type = None
+            pass
         try:
             config.newline_type = NewlineType.from_text(data.get(_NEWLINE))
         except ValueError:
-            config.newline_type = None
+            pass
         whitespace_dict = data.get(_WHITESPACE)
         if whitespace_dict:
             try:
@@ -97,11 +113,11 @@ class TextFormatterConfig:
                     whitespace_dict.get(_BLANK_LINES)
                 )
             except ValueError:
-                config.blank_line_type = None
+                pass
             try:
                 config.trim_type = TrimType(whitespace_dict.get(_TRIM))
             except ValueError:
-                config.trim_type = None
+                pass
         return config
 
     def to_dict(self) -> dict:
@@ -111,6 +127,8 @@ class TextFormatterConfig:
         if self.trim_type is not None:
             whitespace_dict[_TRIM] = self.trim_type.value
         result = {}
+        if self.backup_file is not None:
+            result[_BACKUP_FILE] = str(self.backup_file).lower()
         if self.case_type is not None:
             result[_LETTER_CASE] = self.case_type.value
         if self.newline_type is not None:
