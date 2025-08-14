@@ -1,6 +1,6 @@
 int
 some_function(void) {  
-  int i = 1;
-  i += 10;
-  return i;   
+	int i = 1;
+	i += 10;
+	return i;   
 }

@@ -17,12 +17,14 @@ from textformatter.textformatter import (
     _BLANK_LINES,
     _LETTER_CASE,
     _NEWLINE,
+    _TAB,
     _TRIM,
     _WHITESPACE,
     # Classes
     BlankLineType,
     CaseType,
     NewlineType,
+    TabType,
     TrimType,
     TextFormatterConfig,
     # Document formatting functions
@@ -77,17 +79,20 @@ class TestTextFormatterConfigInit(unittest.TestCase):
         test_blank_line_type = BlankLineType.REMOVE
         test_case_type = CaseType.UPPER
         test_newline_type = NewlineType.CRLF
+        test_tab_type = (TabType.TAB_TO_SPACES, 4)
         test_trim_type = TrimType.ALL
         config = TextFormatterConfig(backup_file=False,
                                      blank_line_type=test_blank_line_type,
                                      case_type=test_case_type,
                                      newline_type=test_newline_type,
+                                     tab_type=test_tab_type,
                                      trim_type=test_trim_type)
         self.assertEqual(config.backup_file, False)
         self.assertEqual(config.blank_line_type, test_blank_line_type)
         self.assertEqual(config.case_type, test_case_type)
         self.assertEqual(config.newline_type, test_newline_type)
         self.assertEqual(config.trim_type, test_trim_type)
+        self.assertEqual(config.tab_type, test_tab_type)
 
 
 class TestTextFormatterConfigFromDict(unittest.TestCase):
@@ -98,6 +103,7 @@ class TestTextFormatterConfigFromDict(unittest.TestCase):
             _LETTER_CASE: "upper",
             _WHITESPACE: {
                 _BLANK_LINES: "collapse",
+                _TAB: ("tab-to-spaces", 4),
                 _TRIM: "all",
             },
         }
@@ -107,6 +113,7 @@ class TestTextFormatterConfigFromDict(unittest.TestCase):
         self.assertEqual(config.blank_line_type, BlankLineType.COLLAPSE)
         self.assertEqual(config.case_type, CaseType.UPPER)
         self.assertEqual(config.newline_type, NewlineType.LF)
+        self.assertEqual(config.tab_type, (TabType.TAB_TO_SPACES, 4))
         self.assertEqual(config.trim_type, TrimType.ALL)
 
 class TestTextFormatterConfigToDict(unittest.TestCase):
@@ -116,6 +123,7 @@ class TestTextFormatterConfigToDict(unittest.TestCase):
             blank_line_type=BlankLineType.REMOVE,
             case_type=CaseType.LOWER,
             newline_type=NewlineType.CRLF,
+            tab_type=(TabType.SPACES_TO_TAB, 2),
             trim_type=TrimType.TRAILING,
             )
         config_dict = config.to_dict()
@@ -125,6 +133,7 @@ class TestTextFormatterConfigToDict(unittest.TestCase):
         whitespace_dict = config_dict.get(_WHITESPACE)
         self.assertTrue(whitespace_dict is not None)
         self.assertEqual(whitespace_dict.get(_BLANK_LINES), "remove")
+        self.assertEqual(whitespace_dict.get(_TAB), ("spaces-to-tab", 2))
         self.assertEqual(whitespace_dict.get(_TRIM), "trailing")
 
 
@@ -144,7 +153,7 @@ class TestProcessFile(unittest.TestCase):
         process_file(file_path, config)
         file_content = _read_file_content(file_path)
         self.assertEqual(file_content,
-                "int\nsome_function(void) {\n  int i = 1;\n  i += 10;\n  return i;\n}")
+                "int\nsome_function(void) {\n    int i = 1;\n    i += 10;\n    return i;\n}")
         self.assertTrue(os.path.exists(backup_file_path))
 
 

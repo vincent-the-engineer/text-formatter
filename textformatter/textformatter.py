@@ -4,7 +4,7 @@ import shutil
 
 from collections.abc import Sequence
 from enum import Enum
-from typing import Self
+from typing import Self, Tuple
 
 
 # --- Private Constants ---
@@ -12,6 +12,7 @@ _BACKUP_FILE = "backup-file"
 _BLANK_LINES = "blank-lines"
 _LETTER_CASE = "letter-case"
 _NEWLINE = "newline"
+_TAB = "tab"
 _TRIM = "trim"
 _WHITESPACE = "whitespace"
 
@@ -69,6 +70,11 @@ class NewlineType(Enum):
         raise ValueError("Unsupported NewlineType")
 
 
+class TabType(Enum):
+    SPACES_TO_TAB = "spaces-to-tab"
+    TAB_TO_SPACES = "tab-to-spaces"
+
+
 class TrimType(Enum):
     LEADING = "leading"
     TRAILING = "trailing"
@@ -81,11 +87,13 @@ class TextFormatterConfig:
                  blank_line_type: BlankLineType=None,
                  case_type: CaseType=None,
                  newline_type: NewlineType=None,
+                 tab_type: Tuple[TabType, int] = None,
                  trim_type: TrimType=None) -> None:
         self.backup_file = backup_file
         self.blank_line_type = blank_line_type
         self.case_type = case_type
         self.newline_type = newline_type
+        self.tab_type = tab_type
         self.trim_type = trim_type
 
     @classmethod
@@ -118,6 +126,14 @@ class TextFormatterConfig:
             except ValueError:
                 pass
             try:
+                values = whitespace_dict.get(_TAB)
+                if values is not None and len(values) >= 2:
+                    tab_type = TabType(values[0])
+                    value = int(values[1])
+                    config.tab_type = (tab_type, value)
+            except ValueError:
+                pass
+            try:
                 config.trim_type = TrimType(whitespace_dict.get(_TRIM))
             except ValueError:
                 pass
@@ -127,6 +143,8 @@ class TextFormatterConfig:
         whitespace_dict = {}
         if self.blank_line_type is not None:
             whitespace_dict[_BLANK_LINES] = self.blank_line_type.value
+        if self.tab_type is not None:
+            whitespace_dict[_TAB] = (self.tab_type[0].value, self.tab_type[1])
         if self.trim_type is not None:
             whitespace_dict[_TRIM] = self.trim_type.value
         result = {}
@@ -152,6 +170,12 @@ def process_file(file_path: str, config: TextFormatterConfig) -> None:
     for i, line in enumerate(lines):
         if config.trim_type:
             line = trim_line(line, config.trim_type)
+        if config.tab_type:
+            tab_type, num_spaces = config.tab_type
+            if tab_type == TabType.TAB_TO_SPACES:
+                line = replace_tab_with_spaces(line, num_spaces)
+            elif tab_type == TabType.SPACES_TO_TAB:
+                line = replace_spaces_with_tab(line, num_spaces)
         if config.case_type:
             line = convert_case(line, config.case_type)
         lines[i] = line

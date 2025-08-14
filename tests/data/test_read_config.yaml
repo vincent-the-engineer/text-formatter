@@ -5,4 +5,7 @@ letter-case: lower
 whitespace:
   trim: "trailing"
   blank-lines: "remove"
+  tab:
+  - "tab-to-spaces"
+  - 4
 

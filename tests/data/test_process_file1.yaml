@@ -3,4 +3,7 @@ backup-file: true
 newline: \n
 whitespace:
   trim: trailing
+  tab:
+  - tab-to-spaces
+  - 4
 

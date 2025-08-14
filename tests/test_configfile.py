@@ -17,6 +17,7 @@ from textformatter.textformatter import (
     BlankLineType,
     CaseType,
     NewlineType,
+    TabType,
     TrimType,
     TextFormatterConfig,
 )
@@ -38,6 +39,7 @@ class TestReadConfig(unittest.TestCase):
         self.assertEqual(config_data.case_type, CaseType.LOWER)
         self.assertEqual(config_data.trim_type, TrimType.TRAILING)
         self.assertEqual(config_data.blank_line_type, BlankLineType.REMOVE)
+        self.assertEqual(config_data.tab_type, (TabType.TAB_TO_SPACES, 4))
 
 class TestWriteConfig(unittest.TestCase):
     def test_write_config_file(self):
@@ -48,6 +50,7 @@ class TestWriteConfig(unittest.TestCase):
             blank_line_type=BlankLineType.COLLAPSE,
             case_type=CaseType.UPPER,
             newline_type=NewlineType.LF,
+            tab_type=(TabType.SPACES_TO_TAB, 3),
             trim_type=TrimType.ALL,
         )
         write_config_file(file_path, config_data)
@@ -57,6 +60,9 @@ class TestWriteConfig(unittest.TestCase):
         self.assertTrue("letter-case: upper" in file_content)
         self.assertTrue("newline: \\n" in file_content)
         self.assertTrue("trim: all" in file_content)
+        self.assertTrue("tab:" in file_content)
+        self.assertTrue("- spaces-to-tab" in file_content)
+        self.assertTrue("- 3" in file_content)
 
 
 # --- Helper Functions ---
