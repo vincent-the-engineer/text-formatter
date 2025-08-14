@@ -4,6 +4,17 @@ import sys
 
 from pathlib import Path
 
+import textformatter
+from textformatter import configfile
+from textformatter import textformatter
+from textformatter.configfile import (
+    read_config_file,
+)
+from textformatter.textformatter import (
+    TextFormatterConfig,
+    process_file,
+)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(usage="%(prog)s <config file> <input files>")
@@ -21,6 +32,9 @@ def main() -> None:
     if len(files) == 0:
         print("No input files provided.")
         sys.exit(1)
+    config = read_config_file(config_file)
+    for file in files:
+        process_file(file, config)
 
 
 if __name__ == "__main__":

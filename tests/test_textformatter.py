@@ -1,11 +1,16 @@
 # --- Imports ---
 import os
+import shutil
 import unittest
 
 from pathlib import Path
 
 import textformatter
+from textformatter import configfile
 from textformatter import textformatter
+from textformatter.configfile import (
+    read_config_file,
+)
 from textformatter.textformatter import (
     # Constants
     _BACKUP_FILE,
@@ -21,7 +26,8 @@ from textformatter.textformatter import (
     TrimType,
     TextFormatterConfig,
     # Document formatting functions
-   split_text_to_lines,
+    process_file,
+    split_text_to_lines,
     join_lines_to_text,
     read_lines_from_file,
     write_lines_to_file,
@@ -123,6 +129,24 @@ class TestTextFormatterConfigToDict(unittest.TestCase):
 
 
 # --- Test Classes for Document Formatting Functions ---
+
+class TestProcessFile(unittest.TestCase):
+    def test_process_file1(self):
+        config = read_config_file(DATA_DIR / "test_process_file1.yaml")
+        file_path = (OUTPUTS_DIR / "test_process_file1.txt")
+        backup_file_path = (OUTPUTS_DIR / "test_process_file1.txt.bak")
+        _delete_file(file_path)
+        _delete_file(backup_file_path)
+        self.assertFalse(os.path.exists(file_path))
+        self.assertFalse(os.path.exists(backup_file_path))
+        shutil.copy(DATA_DIR / "test_process_file1.txt", file_path)
+        self.assertTrue(os.path.exists(file_path))
+        process_file(file_path, config)
+        file_content = _read_file_content(file_path)
+        self.assertEqual(file_content,
+                "int\nsome_function(void) {\n  int i = 1;\n  i += 10;\n  return i;\n}")
+        self.assertTrue(os.path.exists(backup_file_path))
+
 
 class TestSplitTextToLines(unittest.TestCase):
     def test_standard_text(self):

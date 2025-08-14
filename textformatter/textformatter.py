@@ -1,4 +1,7 @@
 # --- Imports ---
+import os
+import shutil
+
 from collections.abc import Sequence
 from enum import Enum
 from typing import Self
@@ -91,7 +94,7 @@ class TextFormatterConfig:
         try:
             value = data.get(_BACKUP_FILE)
             if value is not None:
-                value = value.lower()
+                value = str(value).lower()
                 if value == "true":
                     config.backup_file = True
                 elif value == "false":
@@ -139,6 +142,26 @@ class TextFormatterConfig:
 
 
 # --- Public Document Formatting Functions ---
+
+def process_file(file_path: str, config: TextFormatterConfig) -> None:
+    if not os.path.exists(file_path):
+        raise ValueError("Input file does not exist.")
+    if config.backup_file:
+        shutil.copy(file_path, f"{file_path}.bak")
+    lines = read_lines_from_file(file_path)
+    for i, line in enumerate(lines):
+        if config.trim_type:
+            line = trim_line(line, config.trim_type)
+        if config.case_type:
+            line = convert_case(line, config.case_type)
+        lines[i] = line
+    if config.blank_line_type:
+        lines = remove_blank_lines(config.blank_line_type)
+    if config.newline_type:
+        write_lines_to_file(file_path, lines, config.newline_type)
+    else:
+        write_lines_to_file(file_path, lines)
+
 
 def split_text_to_lines(text: str) -> list[str]:
     """

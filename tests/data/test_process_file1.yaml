@@ -1,0 +1,6 @@
+---
+backup-file: true
+newline: \n
+whitespace:
+  trim: trailing
+
